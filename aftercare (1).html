@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>시술 후 주의사항</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #F7F5F2;
+    --surface: #FFFFFF;
+    --ink: #1A1A1A;
+    --ink-soft: #5C5C5C;
+    --accent: #8B6F5E;
+    --accent-light: #E8DDD8;
+    --line: #E2DDD9;
+    --warn: #C0392B;
+    --warn-bg: #FDF3F2;
+    --green: #1E7A4A;
+    --green-bg: #F0FAF4;
+  }
+
+  body {
+    background: var(--bg);
+    font-family: 'PingFang SC','Hiragino Sans GB','Microsoft YaHei','Malgun Gothic','Apple SD Gothic Neo',sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+    padding-bottom: 60px;
+    font-size: 14px;
+  }
+
+  /* ── Lang bar ── */
+  .lang-bar {
+    background: #1A1A1A;
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 6px;
+    padding: 10px 16px;
+  }
+  .lang-btn {
+    background: transparent;
+    border: 1px solid rgba(255,255,255,0.25);
+    color: rgba(255,255,255,0.55);
+    font-size: 12px;
+    font-weight: 500;
+    padding: 5px 13px;
+    border-radius: 20px;
+    cursor: pointer;
+    letter-spacing: 0.03em;
+    transition: all 0.15s;
+    white-space: nowrap;
+  }
+  .lang-btn:hover { color:#fff; border-color:rgba(255,255,255,0.6); }
+  .lang-btn.active { background:rgba(255,255,255,0.15); color:#fff; border-color:rgba(255,255,255,0.75); }
+
+  /* ── Header ── */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+    padding: 20px 20px 15px;
+    text-align: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-eyebrow { font-size:10px; letter-spacing:0.16em; color:var(--accent); font-weight:500; margin-bottom:4px; }
+  .header-title { font-size:19px; font-weight:600; letter-spacing:0.03em; color:var(--ink); }
+
+  /* ── Tab nav ── */
+  .tab-nav-wrap {
+    background: var(--surface);
+    border-bottom: 1px solid var(--line);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    position: sticky;
+    top: 72px;
+    z-index: 99;
+  }
+  .tab-nav-wrap::-webkit-scrollbar { display:none; }
+  .tab-nav { display:flex; min-width:max-content; padding:0 14px; }
+  .tab-btn {
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    padding: 12px 14px;
+    font-size: 12.5px;
+    font-weight: 400;
+    color: var(--ink-soft);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.15s, border-color 0.15s;
+    letter-spacing: 0.02em;
+  }
+  .tab-btn:hover { color:var(--ink); }
+  .tab-btn.active { color:var(--ink); font-weight:600; border-bottom:2px solid var(--accent); }
+
+  /* ── Content ── */
+  .content-area { max-width:640px; margin:0 auto; padding:22px 16px 0; }
+  .tab-panel { display:none; }
+  .tab-panel.active { display:block; }
+
+  /* ── Panel header ── */
+  .panel-header { margin-bottom:16px; }
+  .panel-tag {
+    display:inline-block;
+    background:var(--accent-light);
+    color:var(--accent);
+    font-size:10px;
+    font-weight:500;
+    letter-spacing:0.1em;
+    padding:3px 9px;
+    border-radius:2px;
+    margin-bottom:8px;
+    text-transform:uppercase;
+  }
+  .panel-title { font-size:18px; font-weight:600; color:var(--ink); line-height:1.4; margin-bottom:5px; }
+  .panel-subtitle { font-size:12.5px; color:var(--ink-soft); line-height:1.65; }
+
+  /* ── Banners ── */
+  .warn-banner {
+    background: var(--warn-bg);
+    border-left: 3px solid var(--warn);
+    border-radius: 0 6px 6px 0;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    font-size: 12.5px;
+    color: var(--warn);
+    line-height: 1.65;
+  }
+  .info-banner {
+    background: var(--green-bg);
+    border-left: 3px solid var(--green);
+    border-radius: 0 6px 6px 0;
+    padding: 10px 14px;
+    margin-bottom: 14px;
+    font-size: 12.5px;
+    color: var(--green);
+    line-height: 1.65;
+  }
+
+  /* ── Section blocks ── */
+  .section-block {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    margin-bottom: 11px;
+    overflow: hidden;
+  }
+  .section-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 11px 15px;
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--ink);
+    background: var(--bg);
+    border-bottom: 1px solid var(--line);
+    letter-spacing: 0.03em;
+  }
+  .section-icon {
+    width: 20px; height: 20px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 10px; font-weight:700;
+    flex-shrink: 0;
+  }
+  .section-items { padding:10px 15px; list-style:none; }
+  .section-items li {
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.75;
+    padding: 5px 0 5px 14px;
+    position: relative;
+    border-bottom: 1px solid var(--line);
+  }
+  .section-items li:last-child { border-bottom:none; }
+  .section-items li::before {
+    content:'';
+    position:absolute;
+    left:0; top:13px;
+    width:5px; height:5px;
+    background:var(--accent-light);
+    border:1.5px solid var(--accent);
+    border-radius:50%;
+  }
+  .section-items li strong { color:var(--ink); font-weight:600; }
+
+  /* ── Common notice block ── */
+  .common-block {
+    background: #F0EDE8;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    margin-bottom: 11px;
+    overflow: hidden;
+  }
+  .common-block .section-title { background:#E8E4DF; }
+
+  /* ── Contact ── */
+  .contact-block {
+    margin-top: 22px;
+    padding: 15px;
+    background: #1A1A1A;
+    border-radius: 10px;
+    text-align: center;
+    color: #fff;
+  }
+  .contact-block p { font-size:11.5px; color:rgba(255,255,255,0.55); margin-bottom:5px; }
+  .contact-block a { color:#fff; font-size:15px; font-weight:500; text-decoration:none; }
+
+  /* ── Lang font overrides ── */
+  body.lang-en  { font-family:-apple-system,'Helvetica Neue',Arial,sans-serif; }
+  body.lang-ja  { font-family:'Hiragino Kaku Gothic ProN','Yu Gothic','Meiryo',sans-serif; }
+  body.lang-zh-TW { font-family:'PingFang TC','Microsoft JhengHei','MingLiU',sans-serif; }
+</style>
+</head>
+<body class="lang-ko">
+
+<div class="lang-bar">
+  <button class="lang-btn active" onclick="setLang('ko',this)">한국어</button>
+  <button class="lang-btn" onclick="setLang('en',this)">English</button>
+  <button class="lang-btn" onclick="setLang('zh-CN',this)">简体中文</button>
+  <button class="lang-btn" onclick="setLang('zh-TW',this)">繁體中文</button>
+  <button class="lang-btn" onclick="setLang('ja',this)">日本語</button>
+</div>
+
+<div class="header">
+  <div class="header-eyebrow" id="hdr-eyebrow">의료 미용</div>
+  <div class="header-title" id="hdr-title">시술 후 주의사항</div>
+</div>
+
+<div class="tab-nav-wrap">
+  <div class="tab-nav" id="tab-nav"></div>
+</div>
+
+<div class="content-area" id="content-area"></div>
+
+<script>
+const PHONE = '+82-00-0000-0000';
+
+/* ═══════════════════════════════════════════
+   UI STRINGS
+═══════════════════════════════════════════ */
+const UI = {
+  ko: { eyebrow:'의료 미용', title:'시술 후 주의사항', contact:'불편하신 점이 있으시면 언제든지 연락 주세요' },
+  en: { eyebrow:'Medical Aesthetics', title:'Post-Treatment Care', contact:'Please contact us anytime if you experience any discomfort' },
+  'zh-CN': { eyebrow:'医疗美容', title:'术后注意事项', contact:'如有任何不适，请随时联系我们' },
+  'zh-TW': { eyebrow:'醫療美容', title:'術後注意事項', contact:'如有任何不適，請隨時聯繫我們' },
+  ja: { eyebrow:'医療美容', title:'施術後の注意事項', contact:'ご不明な点やお体の不調がございましたら、いつでもご連絡ください' },
+};
+
+/* ═══════════════════════════════════════════
+   TABS
+═══════════════════════════════════════════ */
+const TABS = [
+  { id:'ulthera',   labels:{ ko:'울쎄라',     en:'Ultherapy',       'zh-CN':'超声刀',   'zh-TW':'超聲刀',   ja:'ウルセラ' } },
+  { id:'thermage',  labels:{ ko:'써마지',     en:'Thermage',        'zh-CN':'热玛吉',   'zh-TW':'熱瑪吉',   ja:'サーマジ' } },
+  { id:'onda',      labels:{ ko:'온다·티타늄', en:'Onda / Titanium', 'zh-CN':'Onda / Titanium', 'zh-TW':'Onda / Titanium', ja:'オンダ·チタニウム' } },
+  { id:'filler',    labels:{ ko:'필러',       en:'Filler',          'zh-CN':'玻尿酸',   'zh-TW':'玻尿酸',   ja:'フィラー' } },
+  { id:'botox',     labels:{ ko:'보톡스',     en:'Botox',           'zh-CN':'肉毒素',   'zh-TW':'肉毒素',   ja:'ボトックス' } },
+  { id:'skinbooster',labels:{ ko:'스킨부스터', en:'Skin Booster',   'zh-CN':'水光注射', 'zh-TW':'水光注射', ja:'スキンブースター' } },
+  { id:'collagen',  labels:{ ko:'콜라겐부스터',en:'Collagen Booster','zh-CN':'童颜针',  'zh-TW':'童顏針',   ja:'コラーゲンブースター' } },
+  { id:'stemcell',  labels:{ ko:'줄기세포',   en:'Stem Cell',       'zh-CN':'干细胞注射','zh-TW':'幹細胞注射',ja:'幹細胞注射' } },
+  { id:'lipo',      labels:{ ko:'지방흡입',   en:'Liposuction',     'zh-CN':'脂肪吸引', 'zh-TW':'脂肪抽吸', ja:'脂肪吸引' } },
+  { id:'scar',      labels:{ ko:'흉터(포텐자)',en:'Microneedling RF','zh-CN':'黄金微针', 'zh-TW':'黃金微針', ja:'マイクロニードリングRF' } },
+  { id:'toning',    labels:{ ko:'색소토닝',   en:'Toning Laser',    'zh-CN':'色素激光', 'zh-TW':'色素雷射', ja:'トーニングレーザー' } },
+];
+
+/* ═══════════════════════════════════════════
+   CONTENT DATA
+═══════════════════════════════════════════ */
+const DATA = {
+
+  /* ── 울쎄라 ── */
+  ulthera: {
+    tag:     { ko:'HIFU 초음파', en:'HIFU Ultrasound', 'zh-CN':'HIFU 超声', 'zh-TW':'HIFU 超聲', ja:'HIFU 超音波' },
+    title:   { ko:'울쎄라 시술 후 주의사항', en:'Ultherapy Post-Treatment Care', 'zh-CN':'超声刀术后注意事项', 'zh-TW':'超聲刀術後注意事項', ja:'ウルセラ施術後の注意事項' },
+    subtitle:{ ko:'고강도 집속 초음파(HIFU) 시술 후 피부 깊은 층의 조직이 회복되는 시간이 필요합니다. 아래 사항을 꼭 지켜 주세요.', en:'After HIFU treatment, the deep tissue layers of the skin need time to recover. Please follow the instructions below carefully.', 'zh-CN':'高强度聚焦超声治疗后，皮肤深层组织需要时间修复，请认真遵守以下注意事项。', 'zh-TW':'高強度聚焦超聲治療後，皮膚深層組織需要時間修復，請認真遵守以下注意事項。', ja:'高強度集束超音波（HIFU）施術後は、皮膚深層組織の回復に時間が必要です。以下の注意事項をお守りください。' },
+    warnings:[
+      { ko:'시술 후 1~2주 정도 시술 부위에 욱신거림이 있을 수 있습니다. 정상적인 반응입니다.', en:'Aching or throbbing in the treated area may occur for 1–2 weeks post-treatment. This is a normal response.', 'zh-CN':'治疗后1~2周内，治疗部位可能出现酸痛感，这属于正常反应。', 'zh-TW':'治療後1~2週內，治療部位可能出現酸痛感，這屬於正常反應。', ja:'施術後1〜2週間程度、施術部位にズキズキとした痛みが生じることがありますが、正常な反応です。' },
+    ],
+    infos: [],
+    sections:[
+      {
+        icon:'1',
+        label:{ ko:'당일', en:'Same Day', 'zh-CN':'当天', 'zh-TW':'當天', ja:'当日' },
+        items:{
+          ko:['시술 부위를 부드럽게 세안해 주세요. 강하게 문지르지 마세요.','알코올, 각질 제거 성분이 함유된 제품 사용을 삼가 주세요.','세안 및 메이크업은 다음 날부터 가능합니다.','눈에 띄는 붓기가 있을 경우 냉찜질을 해 주세요 (1회 15분 이내).','음주, 사우나, 심한 운동은 삼가 주세요.'],
+          en:['Cleanse the treated area gently. Do not scrub.','Avoid products containing alcohol or exfoliating acids.','Washing face and applying makeup is possible from the next day.','If significant swelling occurs, apply a cold compress (max 15 min at a time).','Avoid alcohol, saunas, and strenuous exercise.'],
+          'zh-CN':['轻柔清洁治疗部位，请勿大力揉搓。','请勿使用含酒精或去角质成分的护肤品。','次日起可正常洗脸及化妆。','如有明显肿胀，可冷敷缓解（每次不超过15分钟）。','请勿饮酒、蒸桑拿或进行剧烈运动。'],
+          'zh-TW':['輕柔清潔治療部位，請勿大力揉搓。','請勿使用含酒精或去角質成分的護膚品。','次日起可正常洗臉及化妝。','如有明顯腫脹，可冷敷緩解（每次不超過15分鐘）。','請勿飲酒、蒸桑拿或進行劇烈運動。'],
+          ja:['施術部位はやさしく洗顔してください。強くこすらないようにしてください。','アルコールや角質除去成分を含む製品の使用はお控えください。','洗顔・メイクは翌日から可能です。','腫れが強い場合は冷湿布をご使用ください（1回15分以内）。','飲酒・サウナ・激しい運動はお控えください。'],
+        }
+      },
+      {
+        icon:'2',
+        label:{ ko:'1~2주', en:'1–2 Weeks', 'zh-CN':'1~2周内', 'zh-TW':'1~2週內', ja:'1〜2週間' },
+        items:{
+          ko:['자외선 차단제(SPF50+)를 매일 꼼꼼히 발라 주세요.','사우나, 고온 환경을 피해 주세요.','충분한 수분 섭취와 진정·보습 제품을 함께 사용해 주세요.'],
+          en:['Apply SPF50+ sunscreen thoroughly every day.','Avoid saunas and high-temperature environments.','Stay well-hydrated and use soothing, moisturizing skincare.'],
+          'zh-CN':['每日认真涂抹SPF50+防晒产品。','避免蒸桑拿及高温环境。','保持充足水分摄入，配合舒缓保湿护肤品。'],
+          'zh-TW':['每日認真塗抹SPF50+防曬產品。','避免蒸桑拿及高溫環境。','保持充足水分攝入，配合舒緩保濕護膚品。'],
+          ja:['毎日しっかりとSPF50+の日焼け止めを塗布してください。','サウナや高温環境はお避けください。','十分な水分補給と、鎮静・保湿スキンケアをお使いください。'],
+        }
+      },
+      {
+        icon:'!',
+        label:{ ko:'효과 및 주의', en:'Results & Precautions', 'zh-CN':'效果与注意事项', 'zh-TW':'效果與注意事項', ja:'効果と注意' },
+        items:{
+          ko:['리프팅 효과는 시술 후 2~3개월에 걸쳐 서서히 나타납니다.','비정상적인 마비감이나 통증이 지속되면 즉시 내원해 주세요.','기능성 제품(미백, 각질 제거 등)은 1~2주간 피해 주세요.'],
+          en:['Lifting results typically appear gradually over 2–3 months post-treatment.','If abnormal numbness or worsening pain persists, visit the clinic immediately.','Avoid functional skincare products (whitening, exfoliating) for 1–2 weeks.'],
+          'zh-CN':['提升效果通常在术后2~3个月内逐渐显现。','如出现异常麻木或持续加重的疼痛，请立即就诊。','1~2周内请避免使用功能性护肤品（美白、去角质等）。'],
+          'zh-TW':['提升效果通常在術後2~3個月內逐漸顯現。','如出現異常麻木或持續加重的疼痛，請立即就診。','1~2週內請避免使用功能性護膚品（美白、去角質等）。'],
+          ja:['リフティング効果は施術後2〜3ヶ月かけて徐々に現れます。','異常な麻痺感や痛みが続く場合は、すぐにご来院ください。','機能性スキンケア（美白・角質除去など）は1〜2週間お控えください。'],
+        }
+      },
+    ]
+  },
+
+  /* ── 써마지 ── */
+  thermage: {
+    tag:     { ko:'고주파 RF', en:'Monopolar RF', 'zh-CN':'单极射频', 'zh-TW':'單極射頻', ja:'モノポーラーRF' },
+    title:   { ko:'써마지 시술 후 주의사항', en:'Thermage Post-Treatment Care', 'zh-CN':'热玛吉术后注意事项', 'zh-TW':'熱瑪吉術後注意事項', ja:'サーマジ施術後の注意事項' },
+    subtitle:{ ko:'단극성 고주파 시술 후 피부 장벽이 일시적으로 약해질 수 있습니다. 보습과 자외선 차단에 집중해 주세요.', en:'After monopolar RF treatment, the skin barrier may be temporarily weakened. Focus on moisturizing and sun protection.', 'zh-CN':'单极射频治疗后皮肤屏障可能暂时减弱，请重点做好保湿与防晒。', 'zh-TW':'單極射頻治療後皮膚屏障可能暫時減弱，請重點做好保濕與防曬。', ja:'モノポーラーRF施術後は皮膚のバリア機能が一時的に低下することがあります。保湿と紫外線対策を重点的にお願いします。' },
+    warnings:[
+      { ko:'시술 후 2~3일간 얼굴 붉음이 나타날 수 있습니다. 정상적인 반응입니다.', en:'Facial redness may occur for 2–3 days after treatment. This is a normal reaction.', 'zh-CN':'治疗后2~3天内可能出现面部泛红，属于正常反应。', 'zh-TW':'治療後2~3天內可能出現面部泛紅，屬於正常反應。', ja:'施術後2〜3日間、顔の赤みが生じることがあります。正常な反応です。' },
+    ],
+    infos: [],
+    sections:[
+      {
+        icon:'1',
+        label:{ ko:'당일~2~3일', en:'Day 1–3', 'zh-CN':'当天起2~3天', 'zh-TW':'當天起2~3天', ja:'当日〜3日間' },
+        items:{
+          ko:['너무 차가운 물로 세안하지 마세요 (2~3일간).','자극이 없는 순한 보습 크림을 충분히 발라 주세요.','마스크팩은 다음 날부터 사용 가능합니다.','세안 및 메이크업은 다음 날부터 가능합니다.','사우나, 열탕 목욕은 삼가 주세요.'],
+          en:['Do not wash your face with very cold water for 2–3 days.','Apply a mild, non-irritating moisturizer generously.','Sheet masks can be used from the next day.','Washing face and applying makeup is possible from the next day.','Avoid saunas and hot baths.'],
+          'zh-CN':['2~3天内请勿用过冷的水洗脸。','请大量涂抹温和无刺激的保湿霜。','次日起可使用面膜。','次日起可正常洗脸及化妆。','请勿蒸桑拿或泡热水澡。'],
+          'zh-TW':['2~3天內請勿用過冷的水洗臉。','請大量塗抹溫和無刺激的保濕霜。','次日起可使用面膜。','次日起可正常洗臉及化妝。','請勿蒸桑拿或泡熱水澡。'],
+          ja:['2〜3日間は冷たすぎる水での洗顔はお控えください。','刺激の少ない保湿クリームをたっぷりとお使いください。','シートマスクは翌日から使用可能です。','洗顔・メイクは翌日から可能です。','サウナや熱いお風呂はお控えください。'],
+        }
+      },
+      {
+        icon:'2',
+        label:{ ko:'1주일', en:'Within 1 Week', 'zh-CN':'1周内', 'zh-TW':'1週內', ja:'1週間以内' },
+        items:{
+          ko:['자외선 차단제(SPF50+)를 매일 꼼꼼히 발라 주세요.','과도한 운동 및 과도한 발한을 피해 주세요.','음주와 자극적인 음식을 피해 주세요.','기능성 제품(미백, 각질 제거 등)은 1~2주간 피해 주세요.'],
+          en:['Apply SPF50+ sunscreen carefully every day.','Avoid excessive exercise and sweating.','Avoid alcohol and spicy or irritating foods.','Avoid functional skincare (whitening, exfoliating) for 1–2 weeks.'],
+          'zh-CN':['每日认真涂抹SPF50+防晒产品。','避免剧烈运动和大量出汗。','避免饮酒及辛辣刺激性食物。','1~2周内请避免使用功能性护肤品（美白、去角质等）。'],
+          'zh-TW':['每日認真塗抹SPF50+防曬產品。','避免劇烈運動和大量出汗。','避免飲酒及辛辣刺激性食物。','1~2週內請避免使用功能性護膚品（美白、去角質等）。'],
+          ja:['毎日丁寧にSPF50+の日焼け止めを塗ってください。','過度な運動や発汗はお控えください。','飲酒や刺激物の摂取はお控えください。','機能性スキンケア（美白・角質除去など）は1〜2週間お控えください。'],
+        }
+      },
+      {
+        icon:'!',
+        label:{ ko:'효과 및 주의', en:'Results & Precautions', 'zh-CN':'效果与注意', 'zh-TW':'效果與注意', ja:'効果と注意' },
+        items:{
+          ko:['효과는 시술 후 1~6개월에 걸쳐 지속적으로 나타납니다.','피부 이상 함몰이나 지속적인 통증이 있으면 즉시 내원해 주세요.'],
+          en:['Results typically continue to develop over 1–6 months after treatment.','If abnormal skin depression or persistent pain occurs, visit the clinic immediately.'],
+          'zh-CN':['效果通常在治疗后1~6个月内持续改善。','如出现皮肤异常凹陷或持续疼痛，请立即就诊。'],
+          'zh-TW':['效果通常在治療後1~6個月內持續改善。','如出現皮膚異常凹陷或持續疼痛，請立即就診。'],
+          ja:['効果は施術後1〜6ヶ月にわたって継続的に現れます。','皮膚の異常な陥凹や持続的な痛みがある場合は、すぐにご来院ください。'],
+        }
+      },
+    ]
+  },
+
+  /* ── 온다·티타늄 ── */
+  onda: {
+    tag:     { ko:'Onda / Titanium', en:'Onda / Titanium', 'zh-CN':'Onda / Titanium', 'zh-TW':'Onda / Titanium', ja:'Onda / Titanium' },
+    title:   { ko:'온다·티타늄 시술 후 주의사항', en:'Onda / Titanium Post-Treatment Care', 'zh-CN':'Onda / Titanium 术后注意事项', 'zh-TW':'Onda / Titanium 術後注意事項', ja:'オンダ・チタニウム施術後の注意事項' },
+    subtitle:{ ko:'시술 직후부터 즉각적인 효과가 나타나며, 보통 월 1회 2~3회 시술 시 효과적입니다.', en:'Immediate results are visible right after treatment. Typically, 2–3 sessions once a month are recommended for optimal results.', 'zh-CN':'治疗后立即可见效果，通常每月1次，共2~3次效果最佳。', 'zh-TW':'治療後立即可見效果，通常每月1次，共2~3次效果最佳。', ja:'施術直後から即効性が現れます。通常、月1回・計2〜3回の施術が効果的です。' },
+    warnings:[
+      { ko:'시술 후 2~3일간 얼굴 붉음이 나타날 수 있습니다. 정상적인 반응입니다.', en:'Facial redness may occur for 2–3 days. This is a normal reaction.', 'zh-CN':'治疗后2~3天内可能出现面部泛红，属正常反应。', 'zh-TW':'治療後2~3天內可能出現面部泛紅，屬正常反應。', ja:'施術後2〜3日間、顔の赤みが生じることがあります。正常な反応です。' },
+      { ko:'시술 부위에 욱신거림이 있을 수 있습니다. 정상적인 반응입니다.', en:'Aching or throbbing may occur at the treated area. This is a normal reaction.', 'zh-CN':'治疗部位可能出现酸痛感，属正常反应。', 'zh-TW':'治療部位可能出現酸痛感，屬正常反應。', ja:'施術部位にズキズキした感覚が生じる場合がありますが、正常な反応です。' },
+    ],
+    infos: [],
+    sections:[
+      {
+        icon:'1',
+        label:{ ko:'당일', en:'Same Day', 'zh-CN':'当天', 'zh-TW':'當天', ja:'当日' },
+        items:{
+          ko:['세안 및 메이크업은 다음 날부터 가능합니다.','보습 크림을 충분히 발라 주세요.','음주, 사우나, 무리한 운동을 삼가 주세요.','시술 부위를 강하게 문지르지 마세요.'],
+          en:['Washing face and applying makeup is possible from the next day.','Apply moisturizing cream generously.','Avoid alcohol, saunas, and strenuous exercise.','Do not rub the treated area vigorously.'],
+          'zh-CN':['次日起可正常洗脸及化妆。','请大量涂抹保湿霜。','请勿饮酒、蒸桑拿或剧烈运动。','请勿用力揉搓治疗部位。'],
+          'zh-TW':['次日起可正常洗臉及化妝。','請大量塗抹保濕霜。','請勿飲酒、蒸桑拿或劇烈運動。','請勿用力揉搓治療部位。'],
+          ja:['洗顔・メイクは翌日から可能です。','保湿クリームをたっぷりとお使いください。','飲酒・サウナ・激しい運動はお控えください。','施術部位を強くこすらないでください。'],
+        }
+      },
+      {
+        icon:'2',
+        label:{ ko:'1주일', en:'Within 1 Week', 'zh-CN':'1周内', 'zh-TW':'1週內', ja:'1週間以内' },
+        items:{
+          ko:['자외선 차단제(SPF50+)를 매일 발라 주세요.','기능성 제품(미백, 각질 제거 등)은 1~2주간 피해 주세요.','자극적인 음식과 음주를 피해 주세요.'],
+          en:['Apply SPF50+ sunscreen every day.','Avoid functional skincare (whitening, exfoliating) for 1–2 weeks.','Avoid spicy foods and alcohol.'],
+          'zh-CN':['每日涂抹SPF50+防晒产品。','1~2周内请避免使用功能性护肤品（美白、去角质等）。','避免辛辣食物及饮酒。'],
+          'zh-TW':['每日塗抹SPF50+防曬產品。','1~2週內請避免使用功能性護膚品（美白、去角質等）。','避免辛辣食物及飲酒。'],
+          ja:['毎日SPF50+の日焼け止めをお使いください。','機能性スキンケア（美白・角質除去など）は1〜2週間お控えください。','刺激物の摂取や飲酒はお控えください。'],
+        }
+      },
+    ]
+  },
+
+  /* ── 필러 ── */
+  filler: {
+    tag:     { ko:'필러 주사', en:'Dermal Filler', 'zh-CN':'玻尿酸注射', 'zh-TW':'玻尿酸注射', ja:'ヒアルロン酸注射' },
+    title:   { ko:'필러 시술 후 주의사항', en:'Filler Post-Treatment Care', 'zh-CN':'玻尿酸注射术后注意事项', 'zh-TW':'玻尿酸注射術後注意事項', ja:'フィラー施術後の注意事項' },
+    subtitle:{ ko:'필러(히알루론산 등) 주사 후 필러가 제자리를 잡을 수 있도록 아래 사항을 꼭 지켜 주세요. 얼굴 필러 및 바디 필러(어깨·엉덩이 등) 모두 해당됩니다.', en:'After filler (hyaluronic acid, etc.) injection, please follow the instructions below carefully to allow the filler to settle properly. Applies to both facial and body fillers (shoulders, hips, etc.).', 'zh-CN':'玻尿酸等填充剂注射后，请严格遵守以下事项，确保填充物稳定就位。适用于面部填充及身体填充（肩部、臀部等）。', 'zh-TW':'玻尿酸等填充劑注射後，請嚴格遵守以下事項，確保填充物穩定就位。適用於面部填充及身體填充（肩部、臀部等）。', ja:'フィラー（ヒアルロン酸等）注射後は、フィラーが定着するよう以下の事項をお守りください。顔・ボディフィラー（肩・ヒップ等）どちらにも適用されます。' },
+    warnings:[
+      { ko:'주사 부위를 누르거나 마사지하지 마세요. 필러가 이동할 수 있습니다.', en:'Do not press or massage the injection site. The filler may migrate.', 'zh-CN':'请勿按压或按摩注射部位，以防填充物移位。', 'zh-TW':'請勿按壓或按摩注射部位，以防填充物移位。', ja:'注射部位を押したりマッサージしたりしないでください。フィラーが移動する可能性があります。' },
+      { ko:'주사 시술이므로 피부가 얇은 부위는 멍이 들 수 있으며, 1~2주 정도 지속될 수 있습니다.', en:'As this is an injection treatment, bruising may occur in areas with thin skin and may last 1–2 weeks.', 'zh-CN':'由于是注射类治疗，皮肤较薄处可能出现瘀青，可能持续1~2周。', 'zh-TW':'由於是注射類治療，皮膚較薄處可能出現瘀青，可能持續1~2週。', ja:'注射施術のため、皮膚が薄い部位にあざが生じることがあり、1〜2週間ほど続く場合があります。' },
+    ],
+    infos: [],
+    sections:[
+      {
+        icon:'1',
+        label:{ ko:'당일', en:'Same Day', 'zh-CN':'当天', 'zh-TW':'當天', ja:'当日' },
+        items:{
+          ko:['주사 부위를 절대로 마사지하거나 문지르지 마세요.','열찜질, 사우나를 피해 주세요.','가벼운 붓기와 멍은 정상입니다.','당일 메이크업을 삼가 주세요.','세안 및 메이크업은 다음 날부터 가능합니다.','붙여드린 재생테이프는 다음 날 제거해 주세요.','처방약을 복용해 주세요.','일주일간 음주를 피해 주세요.'],
+          en:['Do not massage or rub the injection site under any circumstances.','Avoid heat application and saunas.','Mild swelling and bruising is normal.','Avoid makeup on the day of treatment.','Washing face and applying makeup is possible from the next day.','Remove the provided healing tape the next day.','Take prescribed medications as directed.','Avoid alcohol for one week.'],
+          'zh-CN':['请勿按摩或揉搓注射部位。','请勿热敷或蒸桑拿。','轻微肿胀和瘀青属正常现象。','当天请勿化妆。','次日起可正常洗脸及化妆。','次日取下随附的修复贴。','请按处方服药。','请一周内避免饮酒。'],
+          'zh-TW':['請勿按摩或揉搓注射部位。','請勿熱敷或蒸桑拿。','輕微腫脹和瘀青屬正常現象。','當天請勿化妝。','次日起可正常洗臉及化妝。','次日取下隨附的修復貼。','請按處方服藥。','請一週內避免飲酒。'],
+          ja:['注射部位は絶対にマッサージしたり、こすったりしないでください。','温熱パッドやサウナはお控えください。','軽い腫れやあざは正常です。','当日はメイクをお控えください。','洗顔・メイクは翌日から可能です。','お渡しした再生テープは翌日に剥がしてください。','処方薬を服用してください。','1週間は飲酒をお控えください。'],
+        }
+      },
+      {
+        icon:'2',
+        label:{ ko:'1~2주', en:'1–2 Weeks', 'zh-CN':'1~2周', 'zh-TW':'1~2週', ja:'1〜2週間' },
+        items:{
+          ko:['붓기는 일주일간 지속될 수 있으며, 붓기가 있는 동안에는 좌우 비대칭이 있을 수 있습니다. 붓기가 가라앉은 뒤 모양을 확인해 주세요.','시술 부위가 2~3주간 욱신거릴 수 있으며 길게는 1개월까지 지속되는 경우도 있습니다. 시간이 지나면서 자연스럽게 호전됩니다.','격렬한 운동, 고온 환경(사우나, 뜨거운 목욕)을 피해 주세요.','다른 에너지 기기 시술은 전문의와 충분한 상담 후 진행하세요.','바디 필러의 경우 한 번에 많은 양이 들어가므로 불편감이 더 오래 지속될 수 있습니다.','입술 필러 시술 시 2주간 빨대 사용을 자제해 주세요.','수면 시 가급적 반듯이 누워 시술 부위가 눌리지 않도록 해 주세요.'],
+          en:['Swelling may last up to one week. Asymmetry may be visible while swollen — assess the shape after swelling subsides.','Aching at the injection site may persist for 2–3 weeks and in some cases up to 1 month. It will gradually improve over time.','Avoid intense exercise and high-temperature environments (saunas, hot baths).','For any other energy-based treatments, please consult your physician beforehand.','Body fillers involve larger volumes, so discomfort may last longer.','Avoid using straws for 2 weeks after lip filler.','Sleep on your back to avoid putting pressure on the treated area.'],
+          'zh-CN':['肿胀可能持续约1周，肿胀期间可能出现左右不对称，消肿后再评估形态。','注射部位可能在2~3周内出现酸痛，部分情况持续约1个月，随时间推移会自然好转。','避免剧烈运动及高温环境（桑拿、热水澡）。','如需进行其他能量仪器治疗，请务必提前与专科医生充分沟通。','身体填充量较大，不适感可能持续更长时间。','唇部填充后请2周内避免使用吸管。','睡眠时请尽量仰卧，避免压迫填充部位。'],
+          'zh-TW':['腫脹可能持續約1週，腫脹期間可能出現左右不對稱，消腫後再評估形態。','注射部位可能在2~3週內出現酸痛，部分情況持續約1個月，隨時間推移會自然好轉。','避免劇烈運動及高溫環境（桑拿、熱水澡）。','如需進行其他能量儀器治療，請務必提前與專科醫生充分溝通。','身體填充量較大，不適感可能持續更長時間。','唇部填充後請2週內避免使用吸管。','睡眠時請儘量仰臥，避免壓迫填充部位。'],
+          ja:['腫れは最大1週間ほど続く場合があります。腫れている間は左右非対称に見えることがありますが、腫れが引いてからご確認ください。','注射部位のズキズキした感覚は2〜3週間、場合によっては1ヶ月ほど続くことがありますが、自然に改善します。','激しい運動や高温環境（サウナ、熱いお風呂）はお控えください。','他のエネルギー系施術をご希望の場合は、事前に専門医に十分ご相談ください。','ボディフィラーは一度に多量が入るため、不快感がより長く続く場合があります。','リップフィラー後は2週間ストローの使用をお控えください。','就寝時はなるべく仰向けに寝て、施術部位が圧迫されないようにしてください。'],
+        }
+      },
+      {
+        icon:'!',
+        label:{ ko:'시술 후 1개월', en:'After 1 Month', 'zh-CN':'术后1个月', 'zh-TW':'術後1個月', ja:'施術後1ヶ月' },
+        items:{
+          ko:['시술 후 약 1개월간 필러 부위가 눌리지 않도록 주의해 주세요.','피부가 하얗게 변하거나 통증이 심해지는 경우(혈관 폐색 가능성) 즉시 내원해 주세요.','심한 붓기나 염증 발생 시 즉시 내원해 주세요.'],
+          en:['Be careful not to press or compress the filler area for approximately 1 month post-treatment.','If the skin turns white or pain intensifies (possible vascular occlusion), visit the clinic immediately.','If severe swelling or inflammation occurs, contact the clinic immediately.'],
+          'zh-CN':['术后约1个月内，请注意避免挤压填充部位。','如皮肤变白或疼痛加重（可能为血管栓塞），请立即就诊。','如出现严重肿胀或炎症，请立即联系诊所。'],
+          'zh-TW':['術後約1個月內，請注意避免擠壓填充部位。','如皮膚變白或疼痛加重（可能為血管栓塞），請立即就診。','如出現嚴重腫脹或炎症，請立即聯繫診所。'],
+          ja:['施術後約1ヶ月間は、フィラー部位が圧迫されないようにご注意ください。','皮膚が白くなったり、痛みが強くなった場合（血管閉塞の可能性）は、すぐにご来院ください。','強い腫れや炎症が生じた場合は、すぐにご連絡ください。'],
+        }
+      },
+    ]
+  },
+
+  /* ── 보톡스 ── */
+  botox: {
+    tag:     { ko:'보툴리눔 톡신', en:'Botulinum Toxin', 'zh-CN':'肉毒毒素', 'zh-TW':'肉毒毒素', ja:'ボツリヌストキシン' },
+    title:   { ko:'보톡스 시술 후 주의사항', en:'Botox Post-Treatment Care', 'zh-CN':'肉毒素注射术后注意事项', 'zh-TW':'肉毒素注射術後注意事項', ja:'ボトックス施術後の注意事項' },
+    subtitle:{ ko:'보툴리눔 톡신 주사 후 약물 확산에 영향을 주는 행동을 피해 주세요.', en:'After botulinum toxin injection, avoid behaviors that may affect the diffusion and efficacy of the toxin.', 'zh-CN':'肉毒素注射后，请避免影响药物扩散与效果的行为。', 'zh-TW':'肉毒素注射後，請避免影響藥物擴散與效果的行為。', ja:'ボツリヌストキシン注射後は、薬剤の拡散や効果に影響する行為をお控えください。' },
+    warnings:[
+      { ko:'주사 시술이므로 피부가 얇은 부위는 멍이 들 수 있으며, 1~2주 정도 지속될 수 있습니다.', en:'As this is an injection treatment, bruising may occur in areas with thin skin and may last 1–2 weeks.', 'zh-CN':'由于是注射类治疗，皮肤较薄处可能出现瘀青，可能持续1~2周。', 'zh-TW':'由於是注射類治療，皮膚較薄處可能出現瘀青，可能持續1~2週。', ja:'注射施術のため、皮膚が薄い部位にあざが生じることがあり、1〜2週間ほど続く場合があります。' },
+    ],
+    infos:[],
+    sections:[
+      {
+        icon:'1',
+        label:{ ko:'당일', en:'Same Day', 'zh-CN':'当天', 'zh-TW':'當天', ja:'当日' },
+        items:{
+          ko:['주사 부위를 마사지하거나 문지르지 마세요.','음주 및 격렬한 운동을 피해 주세요.','열찜질, 사우나를 피해 주세요.','가벼운 붉은 점이나 붓기는 정상적인 반응입니다.','세안 및 메이크업은 다음 날부터 가능합니다.'],
+          en:['Do not massage or rub the injection site.','Avoid alcohol and intense exercise.','Avoid heat application and saunas.','Minor redness or slight swelling at injection points is normal.','Washing face and applying makeup is possible from the next day.'],
+          'zh-CN':['请勿按摩或揉搓注射部位。','请勿饮酒或进行激烈运动。','请勿热敷或蒸桑拿。','注射点出现轻微红点或肿胀属正常现象。','次日起可正常洗脸及化妆。'],
+          'zh-TW':['請勿按摩或揉搓注射部位。','請勿飲酒或進行激烈運動。','請勿熱敷或蒸桑拿。','注射點出現輕微紅點或腫脹屬正常現象。','次日起可正常洗臉及化妝。'],
+          ja:['注射部位をマッサージしたり、こすったりしないでください。','飲酒・激しい運動はお控えください。','温熱パッドやサウナはお控えください。','注射部位の軽い赤みや腫れは正常な反応です。','洗顔・メイクは翌日から可能です。'],
+        }
+      },
+      {
+        icon:'2',
+        label:{ ko:'1주일', en:'Within 1 Week', 'zh-CN':'1周内', 'zh-TW':'1週內', ja:'1週間以内' },
+        items:{
+          ko:['주름/스킨 보톡스는 1주일 후부터 효과가 나타납니다.','근육(턱/침샘/바디) 보톡스는 1개월 후부터 효과가 나타납니다.','비타민 E, 아스피린 등 혈액 희석 건강보조제를 피해 주세요.','기능성 제품(미백, 각질 제거 등)은 1~2주간 피해 주세요.'],
+          en:['Wrinkle/skin botox effects appear after 1 week.','Muscle (jaw/salivary gland/body) botox effects appear after 1 month.','Avoid supplements that thin blood, such as Vitamin E or aspirin.','Avoid functional skincare (whitening, exfoliating) for 1–2 weeks.'],
+          'zh-CN':['去皱 / 紧致肉毒素注射：1周后效果显现。','肌肉（咬肌/唾液腺/身体）肉毒素：1个月后效果显现。','避免服用维生素E、阿司匹林等稀释血液的保健品。','1~2周内请避免使用功能性护肤品（美白、去角质等）。'],
+          'zh-TW':['去皺 / 緊緻肉毒素注射：1週後效果顯現。','肌肉（咬肌/唾液腺/身體）肉毒素：1個月後效果顯現。','避免服用維生素E、阿司匹林等稀釋血液的保健品。','1~2週內請避免使用功能性護膚品（美白、去角質等）。'],
+          ja:['しわ・スキンボトックスは1週間後から効果が現れます。','筋肉（エラ・唾液腺・ボディ）ボトックスは1ヶ月後から効果が現れます。','ビタミンEやアスピリンなど血液をさらさらにするサプリメントはお控えください。','機能性スキンケア（美白・角質除去など）は1〜2週間お控えください。'],
+        }
+      },
+      {
+        icon:'!',
+        label:{ ko:'효과 및 주의', en:'Results & Precautions', 'zh-CN':'效果与注意', 'zh-TW':'效果與注意', ja:'効果と注意' },
+        items:{
+          ko:['효과는 개인에 따라 4~6개월 정도 유지됩니다.'],
+          en:['Effects typically last 4–6 months depending on the individual.'],
+          'zh-CN':['效果因个人体质不同，通常维持4~6个月。'],
+          'zh-TW':['效果因個人體質不同，通常維持4~6個月。'],
+          ja:['効果は個人差がありますが、通常4〜6ヶ月持続します。'],
+        }
+      },
+    ]
+  },
+
+  /* ── 스킨부스터 ── */
+  skinbooster: {
+    tag:     { ko:'수분/재생 주사', en:'Hydration / Regeneration', 'zh-CN':'水光注射', 'zh-TW':'水光注射', ja:'水光注射' },
+    title:   { ko:'스킨부스터 시술 후 주의사항', en:'Skin Booster Post-Treatment Care', 'zh-CN':'水光注射术后注意事项', 'zh-TW':'水光注射術後注意事項', ja:'スキンブースター施術後の注意事項' },
+    subtitle:{ ko:'리쥬란, 물광주사 등 스킨부스터 시술 후 주의사항입니다.', en:'Post-treatment care instructions for skin booster treatments including Rejuran and hydration injections.', 'zh-CN':'丽珠兰（Rejuran）等水光注射后的注意事项。', 'zh-TW':'麗珠蘭（Rejuran）等水光注射後的注意事項。', ja:'リジュラン・水光注射などスキンブースター施術後の注意事項です。' },
+    warnings:[
+      { ko:'시술 후 2~3일간 엠보(물방울) 현상이 나타날 수 있습니다. 정상적인 반응입니다.', en:'Embossing (small raised bumps) may appear for 2–3 days after treatment. This is a normal reaction.', 'zh-CN':'治疗后2~3天内可能出现"水滴状"丘疹（embossing），属正常反应。', 'zh-TW':'治療後2~3天內可能出現「水滴狀」丘疹（embossing），屬正常反應。', ja:'施術後2〜3日間、エンボス（小さな膨らみ）が現れることがありますが、正常な反応です。' },
+      { ko:'주사 시술이므로 피부가 얇은 부위는 멍이 들 수 있으며, 1~2주 정도 지속될 수 있습니다.', en:'As this is an injection treatment, bruising may occur in areas with thin skin and may last 1–2 weeks.', 'zh-CN':'由于是注射类治疗，皮肤较薄处可能出现瘀青，可能持续1~2周。', 'zh-TW':'由於是注射類治療，皮膚較薄處可能出現瘀青，可能持續1~2週。', ja:'注射施術のため、皮膚が薄い部位にあざが生じることがあり、1〜2週間ほど続く場合があります。' },
+    ],
+    infos:[],
+    sections:[
+      {
+        icon:'1',
+        label:{ ko:'당일', en:'Same Day', 'zh-CN':'当天', 'zh-TW':'當天', ja:'当日' },
+        items:{
+          ko:['시술 부위를 강하게 문지르거나 마사지하지 마세요.','세안 및 메이크업은 다음 날부터 가능합니다.','음주, 사우나, 과도한 운동을 삼가 주세요.'],
+          en:['Do not rub or massage the treated area vigorously.','Washing face and applying makeup is possible from the next day.','Avoid alcohol, saunas, and excessive exercise.'],
+          'zh-CN':['请勿用力揉搓或按摩治疗部位。','次日起可正常洗脸及化妆。','请勿饮酒、蒸桑拿或过度运动。'],
+          'zh-TW':['請勿用力揉搓或按摩治療部位。','次日起可正常洗臉及化妝。','請勿飲酒、蒸桑拿或過度運動。'],
+          ja:['施術部位を強くこすったりマッサージしたりしないでください。','洗顔・メイクは翌日から可能です。','飲酒・サウナ・過度な運動はお控えください。'],
+        }
+      },
+      {
+        icon:'2',
+        label:{ ko:'1주일', en:'Within 1 Week', 'zh-CN':'1周内', 'zh-TW':'1週內', ja:'1週間以内' },
+        items:{
+          ko:['자외선 차단제(SPF50+)를 매일 발라 주세요.','기능성 제품(미백, 각질 제거 등)은 1~2주간 피해 주세요.','자극적인 음식과 음주를 피해 주세요.','충분한 보습을 유지해 주세요.'],
+          en:['Apply SPF50+ sunscreen every day.','Avoid functional skincare (whitening, exfoliating) for 1–2 weeks.','Avoid spicy foods and alcohol.','Maintain adequate moisturization.'],
+          'zh-CN':['每日涂抹SPF50+防晒产品。','1~2周内请避免使用功能性护肤品（美白、去角质等）。','避免辛辣食物及饮酒。','保持充足保湿。'],
+          'zh-TW':['每日塗抹SPF50+防曬產品。','1~2週內請避免使用功能性護膚品（美白、去角質等）。','避免辛辣食物及飲酒。','保持充足保濕。'],
+          ja:['毎日SPF50+の日焼け止めをお使いください。','機能性スキンケア（美白・角質除去など）は1〜2週間お控えください。','刺激物の摂取や飲酒はお控えください。','十分な保湿を心がけてください。'],
+        }
+      },
+    ]
+  },
+
+  /* ── 콜라겐부스터 ── */
+  collagen: {
+    tag:     { ko:'콜라겐 자극', en:'Collagen Stimulator', 'zh-CN':'胶原蛋白', 'zh-TW':'膠原蛋白', ja:'コラーゲン刺激' },
+    title:   { ko:'콜라겐부스터 시술 후 주의사항', en:'Collagen Booster Post-Treatment Care', 'zh-CN':'童颜针术后注意事项', 'zh-TW':'童顏針術後注意事項', ja:'コラーゲンブースター施術後の注意事項' },
+    subtitle:{ ko:'콜라겐 자극 주사 시술 후 주의사항입니다. 주사 시술 공통 주의사항도 함께 지켜 주세요.', en:'Post-treatment care for collagen booster injections. Please also observe the common injection care instructions.', 'zh-CN':'胶原蛋白刺激注射后的注意事项，请同时遵守注射类通用注意事项。', 'zh-TW':'膠原蛋白刺激注射後的注意事項，請同時遵守注射類通用注意事項。', ja:'コラーゲン刺激注射施術後の注意事項です。注射施術共通の注意事項もあわせてお守りください。' },
+    warnings:[
+      { ko:'주사 시술이므로 피부가 얇은 부위는 멍이 들 수 있으며, 1~2주 정도 지속될 수 있습니다.', en:'As this is an injection treatment, bruising may occur in areas with thin skin and may last 1–2 weeks.', 'zh-CN':'由于是注射类治疗，皮肤较薄处可能出现瘀青，可能持续1~2周。', 'zh-TW':'由於是注射類治療，皮膚較薄處可能出現瘀青，可能持續1~2週。', ja:'注射施術のため、皮膚が薄い部位にあざが生じることがあり、1〜2週間ほど続く場合があります。' },
+    ],
+    infos:[],
+    sections:[
+      {
+        icon:'1',
+        label:{ ko:'당일', en:'Same Day', 'zh-CN':'当天', 'zh-TW':'當天', ja:'当日' },
+        items:{
+          ko:['주사 부위를 마사지하거나 문지르지 마세요.','세안 및 메이크업은 다음 날부터 가능합니다.','음주, 사우나, 과도한 운동을 삼가 주세요.'],
+          en:['Do not massage or rub the injection site.','Washing face and applying makeup is possible from the next day.','Avoid alcohol, saunas, and excessive exercise.'],
+          'zh-CN':['请勿按摩或揉搓注射部位。','次日起可正常洗脸及化妆。','请勿饮酒、蒸桑拿或过度运动。'],
+          'zh-TW':['請勿按摩或揉搓注射部位。','次日起可正常洗臉及化妝。','請勿飲酒、蒸桑拿或過度運動。'],
+          ja:['注射部位をマッサージしたり、こすったりしないでください。','洗顔・メイクは翌日から可能です。','飲酒・サウナ・過度な運動はお控えください。'],
+        }
+      },
+      {
+        icon:'2',
+        label:{ ko:'1~2주', en:'1–2 Weeks', 'zh-CN':'1~2周', 'zh-TW':'1~2週', ja:'1〜2週間' },
+        items:{
+          ko:['자외선 차단제(SPF50+)를 매일 꼼꼼히 발라 주세요.','기능성 제품(미백, 각질 제거 등)은 1~2주간 피해 주세요.','자극적인 음식과 음주를 피해 주세요.'],
+          en:['Apply SPF50+ sunscreen carefully every day.','Avoid functional skincare (whitening, exfoliating) for 1–2 weeks.','Avoid spicy foods and alcohol.'],
+          'zh-CN':['每日认真涂抹SPF50+防晒产品。','1~2周内请避免使用功能性护肤品（美白、去角质等）。','避免辛辣食物及饮酒。'],
+          'zh-TW':['每日認真塗抹SPF50+防曬產品。','1~2週內請避免使用功能性護膚品（美白、去角質等）。','避免辛辣食物及飲酒。'],
+          ja:['毎日丁寧にSPF50+の日焼け止めを塗ってください。','機能性スキンケア（美白・角質除去など）は1〜2週間お控えください。','刺激物の摂取や飲酒はお控えください。'],
+        }
+      },
+      {
+        icon:'!',
+        label:{ ko:'효과 및 주의', en:'Results', 'zh-CN':'效果说明', 'zh-TW':'效果說明', ja:'効果について' },
+        items:{
+          ko:['콜라겐 생성 효과는 시술 후 수주~수개월에 걸쳐 서서히 나타납니다.','의사의 지시에 따라 추가 시술 일정을 조율해 주세요.'],
+          en:['Collagen-building effects appear gradually over weeks to months after treatment.','Follow your doctor\'s instructions for scheduling follow-up sessions.'],
+          'zh-CN':['胶原蛋白生成效果通常在治疗后数周至数月内逐渐显现。','请按医嘱安排后续治疗时间。'],
+          'zh-TW':['膠原蛋白生成效果通常在治療後數週至數月內逐漸顯現。','請按醫囑安排後續治療時間。'],
+          ja:['コラーゲン生成効果は施術後数週間〜数ヶ月かけて徐々に現れます。','医師の指示に従って、追加施術のスケジュールを調整してください。'],
+        }
+      },
+    ]
+  },
+
+  /* ── 줄기세포 ── */
+  stemcell: {
+    tag:     { ko:'혈액 줄기세포', en:'Blood Stem Cell', 'zh-CN':'血液干细胞', 'zh-TW':'血液幹細胞', ja:'血液幹細胞' },
+    title:   { ko:'줄기세포 시술 후 주의사항', en:'Stem Cell Post-Treatment Care', 'zh-CN':'干细胞注射术后注意事项', 'zh-TW':'幹細胞注射術後注意事項', ja:'幹細胞施術後の注意事項' },
+    subtitle:{ ko:'혈액 줄기세포(스킨/IV) 시술 후 충분한 휴식과 적절한 관리가 세포 활성화와 재생에 중요합니다.', en:'After blood stem cell (skin/IV) treatment, adequate rest and proper care are essential for cell activation and regeneration.', 'zh-CN':'血液干细胞（皮肤/静脉）治疗后，充分休息和适当护理对细胞活化与再生至关重要。', 'zh-TW':'血液幹細胞（皮膚/靜脈）治療後，充分休息和適當護理對細胞活化與再生至關重要。', ja:'血液幹細胞（スキン/IV）施術後は、十分な休息と適切なケアが細胞の活性化と再生に重要です。' },
+    warnings:[
+      { ko:'면역 반응 기간 중 감염 위험을 피하고 과도한 피로를 삼가 주세요.', en:'During the immune response period, avoid infection risks and excessive fatigue.', 'zh-CN':'免疫反应期间，请避免感染风险及过度疲劳。', 'zh-TW':'免疫反應期間，請避免感染風險及過度疲勞。', ja:'免疫反応期間中は感染リスクを避け、過度な疲労をお控えください。' },
+      { ko:'주사 시술이므로 피부가 얇은 부위는 멍이 들 수 있으며, 1~2주 정도 지속될 수 있습니다.', en:'As this is an injection treatment, bruising may occur in areas with thin skin and may last 1–2 weeks.', 'zh-CN':'由于是注射类治疗，皮肤较薄处可能出现瘀青，可能持续1~2周。', 'zh-TW':'由於是注射類治療，皮膚較薄處可能出現瘀青，可能持續1~2週。', ja:'注射施術のため、皮膚が薄い部位にあざが生じることがあり、1〜2週間ほど続く場合があります。' },
+    ],
+    infos:[],
+    sections:[
+      {
+        icon:'1',
+        label:{ ko:'당일', en:'Same Day', 'zh-CN':'当天', 'zh-TW':'當天', ja:'当日' },
+        items:{
+          ko:['주사 부위를 마사지하거나 문지르지 마세요.','주사 부위를 청결하고 건조하게 유지해 주세요.','충분히 휴식을 취하고, 과도한 신체 활동을 피해 주세요.','음주를 삼가 주세요.','세안 및 메이크업은 다음 날부터 가능합니다.'],
+          en:['Do not massage or rub the injection site.','Keep the injection area clean and dry.','Rest fully and avoid excessive physical activity.','Avoid alcohol.','Washing face and applying makeup is possible from the next day.'],
+          'zh-CN':['请勿按摩或揉搓注射部位。','保持注射部位清洁干燥。','请充分休息，避免过度体力活动。','请勿饮酒。','次日起可正常洗脸及化妆。'],
+          'zh-TW':['請勿按摩或揉搓注射部位。','保持注射部位清潔乾燥。','請充分休息，避免過度體力活動。','請勿飲酒。','次日起可正常洗臉及化妝。'],
+          ja:['注射部位をマッサージしたり、こすったりしないでください。','注射部位を清潔で乾いた状態に保ってください。','十分に休息し、過度な運動はお控えください。','飲酒はお控えください。','洗顔・メイクは翌日から可能です。'],
+        }
+      },
+      {
+        icon:'2',
+        label:{ ko:'1~2주', en:'1–2 Weeks', 'zh-CN':'1~2周', 'zh-TW':'1~2週', ja:'1〜2週間' },
+        items:{
+          ko:['격렬한 운동을 피해 주세요.','다른 주사 시술이나 에너지 기기 시술을 받지 마세요.','규칙적인 수면 패턴을 유지하고 충분히 주무세요.','단백질, 비타민이 풍부한 균형 잡힌 식사를 해 주세요.','음주와 흡연을 피해 주세요.','기능성 제품(미백, 각질 제거 등)은 1~2주간 피해 주세요.'],
+          en:['Avoid intense exercise.','Do not receive other injectable or energy-based treatments.','Maintain a regular sleep schedule and get sufficient rest.','Eat a balanced diet rich in protein and vitamins.','Avoid alcohol and smoking.','Avoid functional skincare (whitening, exfoliating) for 1–2 weeks.'],
+          'zh-CN':['避免剧烈运动。','请勿接受其他注射或能量仪器治疗。','保持规律作息，保证充足睡眠。','均衡饮食，增加蛋白质和维生素摄入。','请勿饮酒或吸烟。','1~2周内请避免使用功能性护肤品（美白、去角质等）。'],
+          'zh-TW':['避免劇烈運動。','請勿接受其他注射或能量儀器治療。','保持規律作息，保證充足睡眠。','均衡飲食，增加蛋白質和維生素攝入。','請勿飲酒或吸菸。','1~2週內請避免使用功能性護膚品（美白、去角質等）。'],
+          ja:['激しい運動はお控えください。','他の注射系・エネルギー系施術はお控えください。','規則正しい睡眠習慣を維持し、十分な休息をとってください。','たんぱく質・ビタミンが豊富なバランスのとれた食事を心がけてください。','飲酒・喫煙はお控えください。','機能性スキンケア（美白・角質除去など）は1〜2週間お控えください。'],
+        }
+      },
+      {
+        icon:'!',
+        label:{ ko:'주의', en:'Precautions', 'zh-CN':'注意事项', 'zh-TW':'注意事項', ja:'注意' },
+        items:{
+          ko:['발열, 주사 부위 발적·열감·통증이 생기면 즉시 내원해 주세요.','효과는 시술 후 수주~수개월에 걸쳐 서서히 나타납니다.','의사 지시에 따라 추가 시술 일정을 조율해 주세요.'],
+          en:['If fever, redness, heat, or pain at the injection site occurs, visit the clinic immediately.','Results appear gradually over weeks to months after treatment.','Follow your doctor\'s schedule for follow-up and additional sessions.'],
+          'zh-CN':['如出现发烧、注射部位红热肿痛，请立即就诊。','效果通常在治疗后数周至数月内逐渐显现。','请按医嘱安排后续治疗时间。'],
+          'zh-TW':['如出現發燒、注射部位紅熱腫痛，請立即就診。','效果通常在治療後數週至數月內逐漸顯現。','請按醫囑安排後續治療時間。'],
+          ja:['発熱、注射部位の発赤・熱感・痛みが生じた場合は、すぐにご来院ください。','効果は施術後数週間〜数ヶ月かけて徐々に現れます。','医師の指示に従って、追加施術のスケジュールを調整してください。'],
+        }
+      },
+    ]
+  },
+
+  /* ── 지방흡입 ── */
+  lipo: {
+    tag:     { ko:'지방 흡입술', en:'Liposuction', 'zh-CN':'脂肪吸引术', 'zh-TW':'脂肪抽吸術', ja:'脂肪吸引術' },
+    title:   { ko:'지방흡입 시술 후 주의사항', en:'Liposuction Post-Treatment Care', 'zh-CN':'脂肪吸引术后注意事项', 'zh-TW':'脂肪抽吸術後注意事項', ja:'脂肪吸引施術後の注意事項' },
+    subtitle:{ ko:'지방흡입 후 회복 기간이 상대적으로 길기 때문에 아래 사항을 철저히 지켜 주세요.', en:'Liposuction has a longer recovery period. Please strictly follow all post-operative care instructions.', 'zh-CN':'脂肪吸引术后恢复期较长，请严格遵守以下护理要点。', 'zh-TW':'脂肪抽吸術後恢復期較長，請嚴格遵守以下護理要點。', ja:'脂肪吸引は回復期間が比較的長いため、以下の事項を徹底してお守りください。' },
+    warnings:[],
+    infos:[],
+    sections:[
+      {
+        icon:'1',
+        label:{ ko:'1주일', en:'Week 1', 'zh-CN':'术后1周', 'zh-TW':'術後1週', ja:'術後1週間' },
+        items:{
+          ko:['안정을 취하고 격렬한 활동을 피해 주세요.','배액관(드레인) 관리는 의사 지시에 따라 주세요.','상처 부위를 청결하고 건조하게 유지하고 의사 지시에 따라 드레싱을 교체해 주세요.','멍, 붓기, 마비감은 정상적인 반응입니다.'],
+          en:['Rest adequately and avoid strenuous activity.','Drain tube care should follow your doctor\'s instructions.','Keep wounds clean and dry; change dressings as instructed.','Bruising, swelling, and numbness are normal at this stage.'],
+          'zh-CN':['充分休息，避免剧烈活动。','引流管护理请遵医嘱。','保持伤口清洁干燥，遵医嘱更换敷料。','出现淤青、肿胀、麻木感属正常现象。'],
+          'zh-TW':['充分休息，避免劇烈活動。','引流管護理請遵醫囑。','保持傷口清潔乾燥，遵醫囑更換敷料。','出現瘀青、腫脹、麻木感屬正常現象。'],
+          ja:['十分に安静にし、激しい活動はお控えください。','ドレーンの管理は医師の指示に従ってください。','傷口を清潔で乾いた状態に保ち、指示に従ってドレッシングを交換してください。','あざ・腫れ・麻痺感はこの時期の正常な反応です。'],
+        }
+      },
+      {
+        icon:'2',
+        label:{ ko:'1~4주', en:'Weeks 1–4', 'zh-CN':'1~4周', 'zh-TW':'1~4週', ja:'1〜4週間' },
+        items:{
+          ko:['가벼운 보행은 가능하나 격렬한 운동은 피해 주세요.','목욕탕, 사우나는 삼가 주세요 (샤워는 가능합니다).','나트륨이 많은 음식을 줄여 부기를 완화해 주세요.','음주를 피해 주세요.'],
+          en:['Light walking is permitted; avoid intense exercise.','Avoid baths and saunas (showering is allowed).','Reduce high-sodium foods to minimize swelling.','Avoid alcohol.'],
+          'zh-CN':['可进行轻度步行，避免剧烈运动。','请勿泡澡或蒸桑拿（可淋浴）。','减少高盐食物摄入以减轻水肿。','避免饮酒。'],
+          'zh-TW':['可進行輕度步行，避免劇烈運動。','請勿泡澡或蒸桑拿（可淋浴）。','減少高鹽食物攝入以減輕水腫。','避免飲酒。'],
+          ja:['軽い歩行は可能ですが、激しい運動はお控えください。','入浴やサウナはお控えください（シャワーは可能です）。','塩分の多い食品を控えて、むくみを軽減してください。','飲酒はお控えください。'],
+        }
+      },
+      {
+        icon:'!',
+        label:{ ko:'장기 주의', en:'Long-term Care', 'zh-CN':'长期注意', 'zh-TW':'長期注意', ja:'長期的な注意' },
+        items:{
+          ko:['발열(38.5°C 이상) 또는 상처 부위 이상 분비물이 생기면 즉시 내원해 주세요.','최종 결과는 시술 후 3~6개월에 걸쳐 완전히 나타납니다.','림프 드레나지 마사지는 전문가에게 받으시길 권장합니다.','1주, 1개월, 3개월 추적 진료를 받아 주세요.'],
+          en:['If fever exceeds 38.5°C or abnormal wound discharge occurs, visit the clinic immediately.','Final shaping results typically appear fully 3–6 months post-surgery.','Lymphatic drainage massage is recommended (performed by a trained professional only).','Schedule follow-up visits at 1 week, 1 month, and 3 months.'],
+          'zh-CN':['如发烧超过38.5°C或伤口出现异常分泌物，请立即就诊。','最终塑形效果通常在术后3~6个月完全显现。','建议由专业人员进行淋巴引流按摩。','请安排1周、1个月、3个月随访复诊。'],
+          'zh-TW':['如發燒超過38.5°C或傷口出現異常分泌物，請立即就診。','最終塑形效果通常在術後3~6個月完全顯現。','建議由專業人員進行淋巴引流按摩。','請安排1週、1個月、3個月隨訪複診。'],
+          ja:['発熱（38.5°C以上）や傷口からの異常な分泌物が見られた場合は、すぐにご来院ください。','最終的な仕上がりは術後3〜6ヶ月かけて完全に現れます。','リンパドレナージマッサージは専門家による施術をお勧めします。','1週間・1ヶ月・3ヶ月後の経過観察受診をお願いします。'],
+        }
+      },
+    ]
+  },
+
+  /* ── 흉터(포텐자) ── */
+  scar: {
+    tag:     { ko:'마이크로니들링 RF', en:'Microneedling RF', 'zh-CN':'黄金微针射频', 'zh-TW':'黃金微針射頻', ja:'マイクロニードリングRF' },
+    title:   { ko:'흉터(포텐자) 시술 후 주의사항', en:'Microneedling RF (Potenza) Post-Treatment Care', 'zh-CN':'黄金微针（Potenza）术后注意事项', 'zh-TW':'黃金微針（Potenza）術後注意事項', ja:'マイクロニードリングRF（Potenza）施術後の注意事項' },
+    subtitle:{ ko:'흉터 치료 후 피부 재생에 필요한 시간을 충분히 주세요.', en:'After scar treatment, give the skin sufficient time to regenerate. Care instructions vary by treatment intensity.', 'zh-CN':'瘢痕治疗后，请给予皮肤充足的再生时间，护理要点根据治疗强度有所不同。', 'zh-TW':'疤痕治療後，請給予皮膚充足的再生時間，護理要點根據治療強度有所不同。', ja:'傷跡治療後は皮膚の再生に十分な時間をお与えください。ケア内容は施術強度によって異なります。' },
+    warnings:[
+      { ko:'세안 및 메이크업은 시술 강도에 따라 다릅니다: 일반 시술 후 3~4일, 강한 시술 후 1주일 이후부터 가능합니다.', en:'Washing face and applying makeup timing depends on treatment intensity: possible after 3–4 days for standard treatment, after 1 week for intensive treatment.', 'zh-CN':'洗脸和化妆时间取决于治疗强度：普通治疗后3~4天起可进行，强度较大的治疗后1周起可进行。', 'zh-TW':'洗臉和化妝時間取決於治療強度：普通治療後3~4天起可進行，強度較大的治療後1週起可進行。', ja:'洗顔・メイクは施術強度によって異なります：通常施術後3〜4日、強い施術後は1週間後から可能です。' },
+    ],
+    infos:[],
+    sections:[
+      {
+        icon:'1',
+        label:{ ko:'초기 (1~7일)', en:'Initial Period (Days 1–7)', 'zh-CN':'初期（1~7天）', 'zh-TW':'初期（1~7天）', ja:'初期（1〜7日間）' },
+        items:{
+          ko:['시술 부위를 강하게 문지르거나 자극하지 마세요.','음주, 사우나, 과도한 운동을 삼가 주세요.','시술 부위를 청결하게 유지해 주세요.','의사가 처방한 재생 크림이나 드레싱을 사용해 주세요.','결딱지(크러스팅)가 생길 수 있으며, 자연스럽게 떨어질 때까지 기다려 주세요. 억지로 제거하지 마세요.'],
+          en:['Do not rub or irritate the treated area.','Avoid alcohol, saunas, and excessive exercise.','Keep the treated area clean.','Use prescribed healing cream or dressings as directed.','Crusting may occur; wait for it to fall off naturally. Do not forcibly remove it.'],
+          'zh-CN':['请勿揉搓或刺激治疗部位。','请勿饮酒、蒸桑拿或过度运动。','保持治疗部位清洁。','按医嘱使用修复霜或敷料。','可能出现结痂，请等待自然脱落，切勿强行去除。'],
+          'zh-TW':['請勿揉搓或刺激治療部位。','請勿飲酒、蒸桑拿或過度運動。','保持治療部位清潔。','按醫囑使用修復霜或敷料。','可能出現結痂，請等待自然脫落，切勿強行去除。'],
+          ja:['施術部位を強くこすったり刺激したりしないでください。','飲酒・サウナ・過度な運動はお控えください。','施術部位を清潔に保ってください。','処方された再生クリームやドレッシングをお使いください。','かさぶたができることがありますが、自然に剥がれるのを待ってください。無理に取らないでください。'],
+        }
+      },
+      {
+        icon:'2',
+        label:{ ko:'1~2주', en:'1–2 Weeks', 'zh-CN':'1~2周', 'zh-TW':'1~2週', ja:'1〜2週間' },
+        items:{
+          ko:['자외선 차단제(SPF50+)를 매일 꼼꼼히 발라 주세요. 색소 침착 예방에 중요합니다.','기능성 제품(미백, 각질 제거 등)은 1~2주간 피해 주세요.','충분한 보습을 유지해 주세요.','직사광선 노출을 최소화해 주세요.'],
+          en:['Apply SPF50+ sunscreen carefully every day. This is important for preventing post-inflammatory hyperpigmentation.','Avoid functional skincare (whitening, exfoliating) for 1–2 weeks.','Maintain adequate moisturization.','Minimize direct sun exposure.'],
+          'zh-CN':['每日认真涂抹SPF50+防晒产品，这对预防色素沉着非常重要。','1~2周内请避免使用功能性护肤品（美白、去角质等）。','保持充足保湿。','尽量减少直接日晒。'],
+          'zh-TW':['每日認真塗抹SPF50+防曬產品，這對預防色素沉著非常重要。','1~2週內請避免使用功能性護膚品（美白、去角質等）。','保持充足保濕。','儘量減少直接日曬。'],
+          ja:['毎日丁寧にSPF50+の日焼け止めを塗ってください。色素沈着の予防に重要です。','機能性スキンケア（美白・角質除去など）は1〜2週間お控えください。','十分な保湿を維持してください。','直射日光への露出を最小限にしてください。'],
+        }
+      },
+    ]
+  },
+
+  /* ── 색소토닝 ── */
+  toning: {
+    tag:     { ko:'색소 레이저', en:'Pigment Laser', 'zh-CN':'色素激光', 'zh-TW':'色素雷射', ja:'色素レーザー' },
+    title:   { ko:'색소토닝 시술 후 주의사항', en:'Toning Laser Post-Treatment Care', 'zh-CN':'色素激光术后注意事项', 'zh-TW':'色素雷射術後注意事項', ja:'トーニングレーザー施術後の注意事項' },
+    subtitle:{ ko:'색소 레이저 시술 후에는 다른 시술에 비해 자외선 차단이 특히 중요합니다. 아래 사항을 철저히 지켜 주세요.', en:'After pigment laser treatment, sun protection is especially critical compared to other treatments. Please strictly follow the instructions below.', 'zh-CN':'色素激光治疗后，与其他治疗相比，防晒尤为重要，请严格遵守以下注意事项。', 'zh-TW':'色素雷射治療後，與其他治療相比，防曬尤為重要，請嚴格遵守以下注意事項。', ja:'色素レーザー施術後は、他の施術と比べて特に紫外線対策が重要です。以下の事項を徹底してお守りください。' },
+    warnings:[
+      { ko:'⚠ 색소 레이저 시술 후에는 자외선 차단을 매우 엄격하게 해야 합니다. SPF50+ 자외선 차단제를 매일, 2시간마다 덧발라 주세요.', en:'⚠ Strict sun protection is mandatory after pigment laser treatment. Apply SPF50+ sunscreen every day and reapply every 2 hours.', 'zh-CN':'⚠ 色素激光治疗后必须严格防晒。每天涂抹SPF50+防晒产品，并每2小时补涂一次。', 'zh-TW':'⚠ 色素雷射治療後必須嚴格防曬。每天塗抹SPF50+防曬產品，並每2小時補塗一次。', ja:'⚠ 色素レーザー施術後は非常に厳格な紫外線対策が必要です。SPF50+の日焼け止めを毎日使用し、2時間ごとに塗り直してください。' },
+    ],
+    infos:[],
+    sections:[
+      {
+        icon:'1',
+        label:{ ko:'당일~3일', en:'Days 1–3', 'zh-CN':'当天起3天', 'zh-TW':'當天起3天', ja:'当日〜3日間' },
+        items:{
+          ko:['세안 및 메이크업은 다음 날부터 가능합니다.','시술 부위를 강하게 문지르지 마세요.','냉찜질로 가벼운 열감을 완화할 수 있습니다.','음주, 사우나, 과도한 운동을 삼가 주세요.'],
+          en:['Washing face and applying makeup is possible from the next day.','Do not rub the treated area vigorously.','A cold compress may help relieve mild heat or redness.','Avoid alcohol, saunas, and excessive exercise.'],
+          'zh-CN':['次日起可正常洗脸及化妆。','请勿用力揉搓治疗部位。','可用冷敷缓解轻微热感。','请勿饮酒、蒸桑拿或过度运动。'],
+          'zh-TW':['次日起可正常洗臉及化妝。','請勿用力揉搓治療部位。','可用冷敷緩解輕微熱感。','請勿飲酒、蒸桑拿或過度運動。'],
+          ja:['洗顔・メイクは翌日から可能です。','施術部位を強くこすらないでください。','軽い熱感がある場合は冷湿布で和らげることができます。','飲酒・サウナ・過度な運動はお控えください。'],
+        }
+      },
+      {
+        icon:'2',
+        label:{ ko:'1~2주 (색소 레이저 필수)', en:'1–2 Weeks (Laser Essential)', 'zh-CN':'1~2周（激光必须遵守）', 'zh-TW':'1~2週（雷射必須遵守）', ja:'1〜2週間（レーザー必須事項）' },
+        items:{
+          ko:['SPF50+ 자외선 차단제를 매일 외출 전 충분히 바르고, 외출 시 2시간마다 덧발라 주세요. 양산이나 모자도 함께 착용하세요.','기능성 제품(미백, 각질 제거, 레티놀 등)은 1~2주간 반드시 피해 주세요.','직사광선을 최대한 피해 주세요. 색소 재침착이 발생할 수 있습니다.','색소 딱지가 생길 수 있습니다. 자연스럽게 떨어질 때까지 기다려 주세요. 억지로 제거하면 흉터가 생길 수 있습니다.','충분한 보습을 유지해 주세요.'],
+          en:['Apply SPF50+ sunscreen thoroughly before going out, and reapply every 2 hours outdoors. Use a parasol or hat as well.','Avoid all functional skincare (whitening, exfoliating, retinol, etc.) for 1–2 weeks — this is mandatory.','Avoid direct sunlight as much as possible. Post-inflammatory pigmentation may occur.','Pigment crusting may appear. Wait for it to fall off naturally. Forced removal may cause scarring.','Maintain adequate moisturization.'],
+          'zh-CN':['外出前请充分涂抹SPF50+防晒产品，外出期间每2小时补涂一次，并建议使用遮阳伞或帽子。','1~2周内必须避免使用任何功能性护肤品（美白、去角质、视黄醇等）。','尽量避免直接日晒，否则可能出现色素反黑。','可能出现色素结痂，请等待自然脱落，强行去除可能留下疤痕。','保持充足保湿。'],
+          'zh-TW':['外出前請充分塗抹SPF50+防曬產品，外出期間每2小時補塗一次，並建議使用遮陽傘或帽子。','1~2週內必須避免使用任何功能性護膚品（美白、去角質、視黃醇等）。','盡量避免直接日曬，否則可能出現色素反黑。','可能出現色素結痂，請等待自然脫落，強行去除可能留下疤痕。','保持充足保濕。'],
+          ja:['外出前にSPF50+の日焼け止めをたっぷり塗り、屋外では2時間ごとに塗り直してください。日傘や帽子も併用してください。','機能性スキンケア（美白・角質除去・レチノールなど）は1〜2週間必ずお控えください。','直射日光はできる限り避けてください。色素沈着が起こる可能性があります。','色素のかさぶたができることがありますが、自然に剥がれるのを待ってください。無理に取ると傷跡になる可能性があります。','十分な保湿を維持してください。'],
+        }
+      },
+    ]
+  },
+};
+
+/* ═══════════════════════════════════════════
+   COMMON NOTICE
+═══════════════════════════════════════════ */
+const COMMON = {
+  label: { ko:'공통 주의사항', en:'General Precautions', 'zh-CN':'通用注意事项', 'zh-TW':'通用注意事項', ja:'共通注意事項' },
+  items: {
+    ko: [
+      '음주, 흡연, 사우나, 무리한 운동은 상처 회복에 부정적인 영향을 미치므로 시술 후 가급적 자제해 주세요.',
+      '시술 후 1~2주간은 미백·각질 제거 등 기능성 기초 제품을 피하고 저자극 보습 크림 위주로 사용해 주세요.',
+      '색소 레이저를 제외한 모든 시술은 시술 후 평소처럼 선크림 정도만 발라 주시면 됩니다. 자외선 차단에 관한 엄격한 규정은 색소 레이저에만 해당합니다.',
+    ],
+    en: [
+      'Alcohol, smoking, saunas, and excessive exercise negatively affect wound healing. Please avoid them as much as possible after treatment.',
+      'For 1–2 weeks post-treatment, avoid functional skincare products (whitening, exfoliating, etc.) and use only gentle, low-irritation moisturizers.',
+      'For all treatments except pigment laser, regular daily sunscreen application is sufficient. The strict sun protection rules apply only to pigment laser treatments.',
+    ],
+    'zh-CN': [
+      '饮酒、吸烟、蒸桑拿及过度运动会对伤口愈合产生负面影响，请在治疗后尽量避免。',
+      '治疗后1~2周内，请避免使用功能性护肤品（美白、去角质等），仅使用温和低刺激的保湿产品。',
+      '除色素激光外，所有治疗后只需像平时一样涂抹防晒霜即可。严格防晒的要求仅适用于色素激光治疗。',
+    ],
+    'zh-TW': [
+      '飲酒、吸菸、蒸桑拿及過度運動會對傷口癒合產生負面影響，請在治療後盡量避免。',
+      '治療後1~2週內，請避免使用功能性護膚品（美白、去角質等），僅使用溫和低刺激的保濕產品。',
+      '除色素雷射外，所有治療後只需像平時一樣塗抹防曬霜即可。嚴格防曬的要求僅適用於色素雷射治療。',
+    ],
+    ja: [
+      '飲酒・喫煙・サウナ・過度な運動は傷の回復に悪影響を与えます。施術後はできる限りお控えください。',
+      '施術後1〜2週間は、美白・角質除去などの機能性スキンケア製品を避け、低刺激の保湿クリームのみをお使いください。',
+      '色素レーザー以外のすべての施術は、通常通りの日焼け止め使用で十分です。厳格な紫外線対策は色素レーザーのみに適用されます。',
+    ],
+  }
+};
+
+/* ═══════════════════════════════════════════
+   STATE
+═══════════════════════════════════════════ */
+let currentLang = 'ko';
+let currentTab  = TABS[0].id;
+
+/* ═══════════════════════════════════════════
+   RENDER
+═══════════════════════════════════════════ */
+function renderHeader() {
+  document.getElementById('hdr-eyebrow').textContent = UI[currentLang].eyebrow;
+  document.getElementById('hdr-title').textContent   = UI[currentLang].title;
+}
+
+function renderTabs() {
+  document.getElementById('tab-nav').innerHTML = TABS.map(t => `
+    <button class="tab-btn ${t.id === currentTab ? 'active' : ''}" onclick="switchTab('${t.id}')">
+      ${t.labels[currentLang]}
+    </button>
+  `).join('');
+}
+
+function renderContent() {
+  const lang = currentLang;
+  document.getElementById('content-area').innerHTML = TABS.map(t => {
+    const c = DATA[t.id];
+    const warns = c.warnings.map(w => `<div class="warn-banner">⚠ ${w[lang]}</div>`).join('');
+    const infos = (c.infos||[]).map(i => `<div class="info-banner">ℹ ${i[lang]}</div>`).join('');
+    const sections = c.sections.map(s => `
+      <div class="section-block">
+        <div class="section-title"><span class="section-icon">${s.icon}</span>${s.label[lang]}</div>
+        <ul class="section-items">${s.items[lang].map(i=>`<li>${i}</li>`).join('')}</ul>
+      </div>
+    `).join('');
+    const commonItems = COMMON.items[lang].map(i=>`<li>${i}</li>`).join('');
+    return `
+      <div id="panel-${t.id}" class="tab-panel ${t.id===currentTab?'active':''}">
+        <div class="panel-header">
+          <div class="panel-tag">${c.tag[lang]}</div>
+          <div class="panel-title">${c.title[lang]}</div>
+          <div class="panel-subtitle">${c.subtitle[lang]}</div>
+        </div>
+        ${warns}${infos}${sections}
+        <div class="common-block">
+          <div class="section-title"><span class="section-icon">★</span>${COMMON.label[lang]}</div>
+          <ul class="section-items">${commonItems}</ul>
+        </div>
+        <div class="contact-block">
+          <p>${UI[lang].contact}</p>
+          <a href="tel:${PHONE}">${PHONE}</a>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+function render() {
+  renderHeader();
+  renderTabs();
+  renderContent();
+  document.body.className = 'lang-' + currentLang;
+}
+
+function setLang(lang, btn) {
+  currentLang = lang;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  render();
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+function switchTab(id) {
+  currentTab = id;
+  renderTabs();
+  document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+  const panel = document.getElementById('panel-' + id);
+  if (panel) panel.classList.add('active');
+  window.scrollTo({top:0, behavior:'smooth'});
+}
+
+render();
+</script>
+</body>
+</html>
